@@ -4,7 +4,7 @@ import pymongo
 
 
 def upsert_mongo(db, collection, df):
-    logging.info(f"reading {collection}: {len(df.shape)}")
+    logging.info(f"saving {collection}: {df.shape}")
     try:
         db[collection].insert_many(df.to_dict(orient="records"), ordered=False)
     except pymongo.errors.BulkWriteError as err:
