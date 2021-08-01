@@ -10,7 +10,6 @@ def read_vqha80():
         na_values="-",
         parse_dates=[1],
     ).assign(
-        source="VQHA80",
         readAt=datetime.utcnow(),
     )
 
@@ -22,7 +21,6 @@ def read_vqha98():
         na_values="-",
         parse_dates=[1],
     ).assign(
-        source="VQHA98",
         readAt=datetime.utcnow(),
     )
 
@@ -39,15 +37,10 @@ def read_cosmoe2():
     )
     df.columns.set_names(["indicator", "unit", "member"], inplace=True)
     df.index.set_names(["Station", "schedule", "leadtime"], inplace=True)
-    df = (
-        df.stack([0, 1, 2], dropna=True)
-        .reset_index("unit", drop=True)
-        .unstack("indicator")
-        .reset_index()
-    )
+    df = df.stack([0, 1], dropna=True).dropna(axis=1).reset_index("unit", drop=True)
+    df = df[[]].assign(v=df.values.tolist()).v.unstack("indicator").reset_index()
     df.columns.rename(None, inplace=True)
     return df.assign(
         Date=df.schedule - pd.to_timedelta(df.leadtime + ":00"),
-        source="COSMO2E",
         readAt=datetime.utcnow(),
     ).drop(columns=["leadtime"])
