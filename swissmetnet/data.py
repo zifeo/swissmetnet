@@ -43,4 +43,4 @@ def read_cosmoe2():
     return df.assign(
         Date=df.schedule - pd.to_timedelta(df.leadtime + ":00"),
         readAt=datetime.utcnow(),
-    ).drop(columns=["leadtime"])
+    ).drop(columns=["schedule"])

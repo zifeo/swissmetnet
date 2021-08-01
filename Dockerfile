@@ -31,4 +31,4 @@ FROM base as production
 COPY --from=builder /root/.local /root/.local
 COPY swissmetnet ./swissmetnet
 
-CMD ["python", "-m", "swissmetnet.main"]
+ENTRYPOINT ["python", "-m", "swissmetnet.main"]

@@ -1,3 +1,4 @@
+import argparse
 import logging
 from os import environ
 
@@ -9,6 +10,14 @@ logging.getLogger().setLevel(logging.INFO)
 
 db = pymongo.MongoClient(host=environ["MONGO_URI"]).swissmetnet
 
-utils.upsert_mongo(db, "vqha80", data.read_vqha80())
-utils.upsert_mongo(db, "vqha98", data.read_vqha98())
-utils.upsert_mongo(db, "cosmo2e", data.read_cosmoe2())
+datasets = {
+    "vqha80": data.read_vqha80,
+    "vqha98": data.read_vqha98,
+    "cosmo2e": data.read_cosmoe2,
+}
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--data", nargs="+", choices=datasets.keys(), required=True)
+
+for ds in parser.parse_args().data:
+    utils.upsert_mongo(db, ds, datasets[ds]())
