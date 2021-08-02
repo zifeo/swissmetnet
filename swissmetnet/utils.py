@@ -15,4 +15,4 @@ def upsert_mongo(db, collection, df):
         if any([e["code"] != 11000 for e in err.details["writeErrors"]]):
             raise err
         else:
-            logging.info(f"duplicates ignored: {err.details['writeErrors']}")
+            logging.info(f"duplicates ignored: {len(err.details['writeErrors'])}")
