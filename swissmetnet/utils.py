@@ -7,6 +7,7 @@ import pymongo
 def upsert_mongo(db, collection, df):
     logging.info(f"saving {collection}: {df.shape}")
     try:
+        # assume unique index set
         db[collection].insert_many(
             json.loads(df.to_json(orient="records")), ordered=False
         )
