@@ -4,6 +4,10 @@ import pandas as pd
 
 
 def read_vqha80():
+    """
+    Automatic weather stations - vqha80
+    Doc: https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/info/VQHA80_en.txt
+    """
     return pd.read_csv(
         "https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/VQHA80.csv",
         sep=";",
@@ -15,6 +19,10 @@ def read_vqha80():
 
 
 def read_vqha98():
+    """
+    Automatic precipitation monitoring stations - vqha98
+    Doc: https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/info/VQHA98_en.txt
+    """
     return pd.read_csv(
         "https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/VQHA98.csv",
         sep=";",
@@ -26,6 +34,10 @@ def read_vqha98():
 
 
 def read_cosmoe2():
+    """
+    Numerical forecasts - cosmo2e
+    Doc: https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/Legende_COSMO-E_all_stations.txt
+    """
     df = pd.read_csv(
         "https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/COSMO-E-all-stations.csv",
         sep=";",
