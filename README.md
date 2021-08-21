@@ -15,8 +15,10 @@ poetry run swn --data vqha80 vqha98
 
 ## Docker example
 
+Get the latest released version [here](https://github.com/zifeo/swissmetnet/pkgs/container/swissmetnet).
+
 ```
-docker run --rm -e MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin" ghcr.io/zifeo/swissmetnet:latest --data vqha98
+docker run --rm -e MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin" ghcr.io/zifeo/swissmetnet:v0.1.2 --data vqha98
 ```
 
 ## Kubernetes example
@@ -34,7 +36,7 @@ spec:
         spec:
           containers:
           - name: swissmetnet
-            image: ghcr.io/zifeo/swissmetnet:latest
+            image: ghcr.io/zifeo/swissmetnet:v0.1.2
             imagePullPolicy: IfNotPresent
             args:
             - --data
