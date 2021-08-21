@@ -12,6 +12,13 @@ export MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin"
 python -m swissmetnet.main --data cosmo2e
 poetry run swn --data vqha80 vqha98
 ```
+
+## Docker example
+
+```
+docker run --rm -e MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin" ghcr.io/zifeo/swissmetnet:latest --data vqha98
+```
+
 ## Kubernetes example
 
 ```
@@ -27,7 +34,7 @@ spec:
         spec:
           containers:
           - name: swissmetnet
-            image: rg.fr-par.scw.cloud/zifeo/swissmetnet:latest
+            image: ghcr.io/zifeo/swissmetnet:latest
             imagePullPolicy: IfNotPresent
             args:
             - --data
