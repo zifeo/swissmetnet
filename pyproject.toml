@@ -10,10 +10,10 @@ swn = 'swissmetnet.main:run'
 [tool.poetry.dependencies]
 python = "^3.9"
 pandas = "^1.4.3"
-pymongo = "^4.1.1"
+pymongo = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
-jupyterlab = "^3.4.3"
+jupyterlab = "^3.4.5"
 pre-commit = "^2.20.0"
 
 [build-system]
