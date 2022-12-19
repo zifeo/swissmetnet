@@ -1,0 +1,20 @@
+services:
+
+  mongo:
+    image: mongo:4
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  minio:
+    image: bitnami/minio:2022
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_REGION_NAME: region
+      MINIO_ROOT_USER: access_key
+      MINIO_ROOT_PASSWORD: secret_key
+      MINIO_DEFAULT_BUCKETS: 'bucket:none'

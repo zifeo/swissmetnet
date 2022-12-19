@@ -67,7 +67,11 @@ def read_foehn():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Foehn index", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Foehn index", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_globalstrahlung():
@@ -81,7 +85,9 @@ def read_globalstrahlung():
     )
     return df.iloc[:-3][
         ["Abbr.", "WIGOS-ID", "Global radiation W/m²", "Measurement date"]
-    ]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_luftdruck_700():
@@ -93,7 +99,11 @@ def read_luftdruck_700():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Pressure gpm", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Pressure gpm", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_luftdruck_850():
@@ -105,7 +115,11 @@ def read_luftdruck_850():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Pressure gpm", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Pressure gpm", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_luftdruck_qfe():
@@ -117,7 +131,11 @@ def read_luftdruck_qfe():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Pressure hPa", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Pressure hPa", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_luftdruck_qff():
@@ -129,7 +147,11 @@ def read_luftdruck_qff():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Pressure hPa", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Pressure hPa", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_luftdruck_qnh():
@@ -153,7 +175,9 @@ def read_luftfeuchtigkeit():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Humidity %", "Measurement date"]]
+    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Humidity %", "Measurement date"]].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_lufttemperatur():
@@ -165,7 +189,11 @@ def read_lufttemperatur():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Temperature °C", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Temperature °C", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_niederschlag():
@@ -177,7 +205,11 @@ def read_niederschlag():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Precipitation mm", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Precipitation mm", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_sonnenscheindauer():
@@ -189,7 +221,11 @@ def read_sonnenscheindauer():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Sunshine min", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Sunshine min", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_taupunkt():
@@ -201,7 +237,11 @@ def read_taupunkt():
         encoding="ISO-8859-1",
         sep=";",
     )
-    return df.iloc[:-3][["Abbr.", "WIGOS-ID", "Dew point °C", "Measurement date"]]
+    return df.iloc[:-3][
+        ["Abbr.", "WIGOS-ID", "Dew point °C", "Measurement date"]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_wind_boeenspitze():
@@ -215,7 +255,9 @@ def read_wind_boeenspitze():
     )
     return df.iloc[:-3][
         ["Abbr.", "WIGOS-ID", "Gust km/h", "Wind direction °", "Measurement date"]
-    ]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
 
 
 def read_windgeschwindigkeit():
@@ -229,4 +271,6 @@ def read_windgeschwindigkeit():
     )
     return df.iloc[:-3][
         ["Abbr.", "WIGOS-ID", "Wind km/h", "Wind direction °", "Measurement date"]
-    ]
+    ].assign(
+        readAt=datetime.utcnow(),
+    )
