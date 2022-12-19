@@ -13,10 +13,10 @@ ENV PIP_NO_CACHE_DIR=off \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        curl \
-        build-essential
+RUN apt update \
+    && apt install --no-install-recommends -y \
+    curl \
+    build-essential
 
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ENV PATH="/root/.poetry/bin:$PATH"
