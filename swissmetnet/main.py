@@ -11,11 +11,8 @@ logging.getLogger().setLevel(logging.INFO)
 
 def run():
     db = pymongo.MongoClient(host=environ["MONGO_URI"]).swissmetnet
-
     datasets = {
-        "vqha80": data.read_vqha80,
-        "vqha98": data.read_vqha98,
-        "cosmo2e": data.read_cosmoe2,
+        name[5:]: getattr(data, name) for name in dir(data) if name.startswith("read_")
     }
 
     parser = argparse.ArgumentParser()
