@@ -18,8 +18,8 @@ RUN apt update \
     curl \
     build-essential
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-ENV PATH="/root/.poetry/bin:$PATH"
+RUN curl -sSL https://install.python-poetry.org | python
+ENV PATH="/root/.local/bin:$PATH"
 
 COPY poetry.lock pyproject.toml ./
 RUN poetry export -o requirements.txt \
