@@ -1,4 +1,4 @@
-from io import StringIO
+import io
 import json
 import logging
 from os import environ
@@ -32,7 +32,7 @@ class S3:
     def __init__(self) -> None:
         from botocore.config import Config
 
-        self.resource = boto3.resource(
+        self.client = boto3.client(
             "s3",
             region_name=environ["S3_REGION"],
             aws_access_key_id=environ.get("S3_ACCESS_KEY", ""),
@@ -48,11 +48,13 @@ class S3:
         )
 
     def insert_once(self, name, df):
-        buffer = StringIO()
-        df.to_csv(buffer)
+        buffer = io.BytesIO()
+        df.to_parquet(buffer, index=False)
         readAt = df.Date.iloc[0].isoformat()
         logging.info(f"saving {name}: {df.shape}")
-        self.resource.Object(environ["S3_BUCKET"], key=f"{name}/{readAt}.csv").put(
-            Body=buffer.getvalue()
+        self.client.put_object(
+            Bucket=environ["S3_BUCKET"],
+            Key=f"{name}/{readAt}.parquet",
+            Body=buffer.getvalue(),
         )
         logging.info(f"saved {name}: {df.shape}")

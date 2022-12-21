@@ -4,6 +4,10 @@ from typing import List
 import pandas as pd
 
 
+def _utcnow():
+    return datetime.utcnow().replace(microsecond=0).replace(microsecond=0)
+
+
 def read_vqha80():
     """
     Automatic weather stations - vqha80
@@ -15,7 +19,7 @@ def read_vqha80():
         na_values="-",
         parse_dates=[1],
     ).assign(
-        readAt=datetime.utcnow(),
+        readAt=_utcnow(),
     )
 
 
@@ -30,7 +34,7 @@ def read_vqha98():
         na_values="-",
         parse_dates=[1],
     ).assign(
-        readAt=datetime.utcnow(),
+        readAt=_utcnow(),
     )
 
 
@@ -55,12 +59,12 @@ def read_cosmo2e():
     df.columns.rename(None, inplace=True)
     return df.assign(
         Date=df.schedule - pd.to_timedelta(df.leadtime + ":00"),
-        readAt=datetime.utcnow(),
+        readAt=_utcnow(),
     ).drop(columns=["schedule"])
 
 
 def _read_individual(uri: str, *metric_names: List[str]):
-    return (
+    df = (
         pd.read_csv(
             uri,
             encoding="ISO-8859-1",
@@ -68,9 +72,10 @@ def _read_individual(uri: str, *metric_names: List[str]):
         )
         .iloc[:-3][["Abbr.", "WIGOS-ID", *metric_names, "Measurement date"]]
         .rename(columns={"Measurement date": "Date"})
-        .assign(
-            readAt=datetime.utcnow(),
-        )
+    )
+    return df.assign(
+        Date=pd.to_datetime(df.Date),
+        readAt=_utcnow(),
     )
 
 
