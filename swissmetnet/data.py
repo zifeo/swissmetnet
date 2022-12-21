@@ -34,7 +34,7 @@ def read_vqha98():
     )
 
 
-def read_cosmoe2():
+def read_cosmo2e():
     """
     Numerical forecasts - cosmo2e
     Doc: https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/Legende_COSMO-E_all_stations.txt
