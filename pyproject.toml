@@ -12,7 +12,7 @@ python = "^3.9"
 pandas = "^1.5.2"
 pymongo = "^4.3.3"
 boto3 = "^1.26.33"
-pyarrow = "^10.0.1"
+pyarrow = "^14.0.1"
 
 [tool.poetry.dev-dependencies]
 jupyterlab = "^3.5.2"
