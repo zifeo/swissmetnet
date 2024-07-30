@@ -10,7 +10,7 @@ swn = 'swissmetnet.main:run'
 [tool.poetry.dependencies]
 python = "^3.9"
 pandas = "^1.5.2"
-pymongo = "^4.3.3"
+pymongo = "^4.6.3"
 boto3 = "^1.26.33"
 pyarrow = "^10.0.1"
 
