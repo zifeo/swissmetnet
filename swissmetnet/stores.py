@@ -42,9 +42,11 @@ class S3:
             config=Config(
                 signature_version=environ.get("S3_ENDPOINT_SIGNATURE", "s3v4")
             ),
-            **{"endpoint_url": environ["S3_ENDPOINT"]}
-            if "S3_ENDPOINT" in environ
-            else {},
+            **(
+                {"endpoint_url": environ["S3_ENDPOINT"]}
+                if "S3_ENDPOINT" in environ
+                else {}
+            ),
         )
 
     def insert_once(self, name, df):
