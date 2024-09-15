@@ -9,14 +9,14 @@ swn = 'swissmetnet.main:run'
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pandas = "^1.5.3"
+pandas = "^2.2.2"
 pymongo = "^4.8.0"
 boto3 = "^1.35.19"
-pyarrow = "^10.0.1"
+pyarrow = "^17.0.0"
 
 [tool.poetry.dev-dependencies]
-jupyterlab = "^3.6.8"
-pre-commit = "^2.21.0"
+jupyterlab = "^4.2.5"
+pre-commit = "^3.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

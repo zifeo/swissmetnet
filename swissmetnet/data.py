@@ -48,9 +48,10 @@ def read_cosmo2e():
         sep=";",
         na_values="-999.0",
         parse_dates=[1, 2],
-        skiprows=24,
+        skiprows=23,
         header=[0, 1, 2],
         index_col=[0, 1, 2],
+        date_format="%Y%m%d %H:%M",
     )
     df.columns.set_names(["indicator", "unit", "member"], inplace=True)
     df.index.set_names(["Station", "schedule", "leadtime"], inplace=True)
