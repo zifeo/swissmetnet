@@ -15,7 +15,7 @@ boto3 = "^1.35.19"
 pyarrow = "^17.0.0"
 
 [tool.poetry.dev-dependencies]
-jupyterlab = "^4.2.5"
+jupyterlab = "^4.4.8"
 pre-commit = "^3.8.0"
 
 [build-system]
