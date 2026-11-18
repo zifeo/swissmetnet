@@ -6,11 +6,14 @@ Transform & store weather data from MeteoSwiss to Pandas and Mongo.
 
 ## Getting started
 
+Python 3.13+ is required.
+
 ```
-poetry install
-export MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin"
-python -m swissmetnet.main --data cosmo2e
-poetry run swn --data vqha80 vqha98
+uv sync
+export MONGO_URI="mongodb://user:password@localhost:27017/db?authSource=admin"
+uv run swn --data vqha80 vqha98 --storage mongo
+uv run --env-file .env swn --data local_forecast --storage s3
+uv run --env-file .env swn --data icon_ch2e --storage s3
 ```
 
 ## Docker example
@@ -18,7 +21,7 @@ poetry run swn --data vqha80 vqha98
 Get the latest released version [here](https://github.com/zifeo/swissmetnet/pkgs/container/swissmetnet).
 
 ```
-docker run --rm -e MONGO_URI="mongodb://user@password:localhost:27017/db?authSource=admin" ghcr.io/zifeo/swissmetnet:v0.1.2 --data vqha98
+docker run --rm -e MONGO_URI="mongodb://user:password@localhost:27017/db?authSource=admin" ghcr.io/zifeo/swissmetnet:v0.1.2 --data vqha98 --storage mongo
 ```
 
 ## Kubernetes example
@@ -29,24 +32,51 @@ kind: CronJob
 metadata:
   name: smn
 spec:
-  schedule: "5 */6 * * *"
+  schedule: "15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      backoffLimit: 2
       template:
         spec:
+          restartPolicy: OnFailure
           containers:
           - name: swissmetnet
             image: ghcr.io/zifeo/swissmetnet:v0.1.2
             imagePullPolicy: IfNotPresent
             args:
             - --data
-            - cosmo2e
+            - icon_ch2e
+            - --storage
+            - s3
             env:
-            - name: MONGO_URI
+            - name: S3_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: smn-conf
-                  key: mongo_uri
+                  key: s3_endpoint
+            - name: S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: smn-conf
+                  key: s3_bucket
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: smn-conf
+                  key: s3_access_key
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: smn-conf
+                  key: s3_secret_key
+            - name: S3_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: smn-conf
+                  key: s3_region
 ```
 
 ## Sources
@@ -114,9 +144,9 @@ https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/VQHA98.csv
 }
 ```
 
-### Numerical forecasts - cosmo2e
+### Archived station ensemble - cosmo2e
 
-Doc: https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/Legende_COSMO-E_all_stations.txt
+Kept for the existing Mongo/S3 series. The filename is still COSMO-E-all-stations.csv. The content is a frozen ICON-CH2-EPS dump (last refresh around 2026-05-11).
 
 https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/COSMO-E-all-stations.csv
 
@@ -154,8 +184,50 @@ https://data.geo.admin.ch/ch.meteoschweiz.prognosen/punktprognosen/COSMO-E-all-s
 }
 ```
 
+### Local point forecasts - local_forecast
+
+Live 9-day point forecasts used by the MeteoSwiss app (stations, postal codes, mountain POIs). Updated hourly. Ingests all parameter files of the latest complete STAC issue.
+
+Doc: https://opendatadocs.meteoswiss.ch/e-forecast-data/e4-local-forecast-data
+
+STAC: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting
+
+```json
+{
+  "point_id": 1,
+  "point_type_id": 1,
+  "Date": "2026-11-15T07:00:00",
+  "tre200h0": 0.4,
+  "dkl010h0": 185,
+  "fu3010h0": 1.8,
+  "fu3010h1": 4.3,
+  "rre150h0": 0.0,
+  "sre000h0": 0,
+  "gre000h0": 3,
+  "station_abbr": "ARO",
+  "point_name": "Arosa",
+  "issueAt": "2026-11-15T07:00:00",
+  "readAt": "2026-11-15T07:50:00"
+}
+```
+
+### ICON-CH2-EPS - icon_ch2e
+
+Native GRIB files copied to S3. No station extraction, no derived fields. The k8s CronJob is only the clock: it probes STAC for a complete run and starts a Substantial workflow. Substantial history lives in the same bucket under `substantial/`, so a killed Job resumes without re-GET, and a failed run is resumed from its failed step with `run.retry()`. Each copy step HeadObjects first.
+
+Needs `--storage s3` and the `S3_*` env. Set `SUBSTANTIAL_URL` only to put the history somewhere else.
+
+Doc: https://opendatadocs.meteoswiss.ch/e-forecast-data/e2-e3-numerical-weather-forecasting-model
+
+STAC: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-forecasting-icon-ch2
+
+```
+icon_ch2e/2026-11-15T000000Z/T_2M/P0DT06H00M00S/ctrl.grib2
+icon_ch2e/2026-11-15T000000Z/T_2M/P0DT06H00M00S/pert.grib2
+```
+
 ## License
 
 This code is licensed under [Mozilla Public License](./LICENSE).
 
-At the time of writing, the processed data may be used under the licensing "Open use. Must provide the source. Use for commercial purposes requires permission of the data owner.". However, check your own usage and exact data license on the opendata.swiss [project](https://opendata.swiss/). You can learn more about MeteoSwiss legal basis on their [website](https://www.meteoswiss.admin.ch/home/about-us/legal-basis.html).
+MeteoSwiss Open Data may be used without restriction. The source must be cited when reproducing or redistributing ("Source: MeteoSwiss"). Confirm the current [terms of use](https://opendatadocs.meteoswiss.ch) and [legal basis](https://www.meteoswiss.admin.ch/home/about-us/legal-basis.html) before reuse. Dataset pages also live on [opendata.swiss](https://opendata.swiss/).

@@ -3,8 +3,9 @@ import logging
 
 from swissmetnet import data
 from swissmetnet import stores
+from swissmetnet import workflows
 
-logging.getLogger().setLevel(logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 def run():
@@ -18,14 +19,24 @@ def run():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-d", "--data", nargs="+", choices=datasets.keys(), required=True
+        "-d",
+        "--data",
+        nargs="+",
+        choices=[*datasets.keys(), "icon_ch2e"],
+        required=True,
     )
     parser.add_argument("-s", "--storage", choices=storages.keys(), required=True)
     args = parser.parse_args()
 
+    if "icon_ch2e" in args.data and args.storage != "s3":
+        parser.error("icon_ch2e requires --storage s3")
+
     storage = storages[args.storage]()
-    for ds in parser.parse_args().data:
-        storage.insert_once(ds, datasets[ds]())
+    for ds in args.data:
+        if ds == "icon_ch2e":
+            workflows.run_icon_ch2e(storage)
+        else:
+            storage.insert_once(ds, datasets[ds]())
 
 
 if __name__ == "__main__":

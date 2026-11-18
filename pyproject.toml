@@ -1,23 +1,30 @@
-[tool.poetry]
+[project]
 name = "swissmetnet"
 version = "0.1.0"
-description = ""
-authors = []
+description = "Transform and store weather data from MeteoSwiss"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.1.1",
+    "pymongo>=4.20.0",
+    "boto3>=1.44.3",
+    "pyarrow>=26.0.0",
+    "requests>=2.32.0",
+    "substantial[s3]>=0.2.0",
+]
 
-[tool.poetry.scripts]
-swn = 'swissmetnet.main:run'
+[project.scripts]
+swn = "swissmetnet.main:run"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-pandas = "^2.2.2"
-pymongo = "^4.8.0"
-boto3 = "^1.35.19"
-pyarrow = "^17.0.0"
-
-[tool.poetry.dev-dependencies]
-jupyterlab = "^4.5.7"
-pre-commit = "^3.8.0"
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.6.6",
+    "pre-commit>=4.7.0",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["swissmetnet"]

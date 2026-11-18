@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster as base
+FROM python:3.13-slim-bookworm AS base
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -6,29 +6,26 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 
-FROM base as builder
+FROM base AS builder
 
-ENV PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    POETRY_VIRTUALENVS_CREATE=false \
-    POETRY_NO_INTERACTION=1
+COPY --from=ghcr.io/astral-sh/uv:0.13.8 /uv /uvx /bin/
 
-RUN apt update \
-    && apt install --no-install-recommends -y \
-    curl \
-    build-essential
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
 
-RUN curl -sSL https://install.python-poetry.org | python
-ENV PATH="/root/.local/bin:$PATH"
+COPY pyproject.toml uv.lock README.md ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project --no-dev --no-editable
 
-COPY poetry.lock pyproject.toml ./
-RUN poetry export -o requirements.txt \
-    && pip install --user -r requirements.txt
-
-
-FROM base as production
-
-COPY --from=builder /root/.local /root/.local
 COPY swissmetnet ./swissmetnet
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-editable
 
-ENTRYPOINT ["python", "-m", "swissmetnet.main"]
+
+FROM base AS production
+
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+ENTRYPOINT ["swn"]

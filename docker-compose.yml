@@ -1,20 +1,34 @@
 services:
 
   mongo:
-    image: mongo:4
+    image: mongo:8
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=password
 
-  minio:
-    image: bitnami/minio:2022
+  rustfs:
+    image: rustfs/rustfs:1.0.5
     ports:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_REGION_NAME: "${S3_REGION}"
-      MINIO_ROOT_USER: "${S3_ACCESS_KEY}"
-      MINIO_ROOT_PASSWORD: "${S3_SECRET_KEY}"
-      MINIO_DEFAULT_BUCKETS: "${S3_BUCKET}:none"
+      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
+      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOGGER_LEVEL: error
+    volumes:
+      - rustfs-data:/data
+    command: ["/data"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  rustfs-data:
