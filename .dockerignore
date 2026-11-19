@@ -3,6 +3,5 @@ __pycache__
 .ipynb_checkpoints
 .git
 .github
-.substantial
 research
 *.DS_Store

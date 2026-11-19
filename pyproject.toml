@@ -10,7 +10,6 @@ dependencies = [
     "boto3>=1.44.3",
     "pyarrow>=26.0.0",
     "requests>=2.32.0",
-    "substantial[s3]>=0.2.0",
 ]
 
 [project.scripts]

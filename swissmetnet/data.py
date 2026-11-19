@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datetime import timezone
 import io
@@ -203,6 +204,32 @@ def _latest_local_issue():
             return datetime.strptime(stamp, "%Y%m%d%H%M"), issues[stamp]
         logging.warning("local_forecast issue %s still publishing", stamp)
     raise RuntimeError("no complete local forecast issue on STAC")
+
+
+def sync_icon_ch2e(storage):
+    ref = latest_complete_icon_ref()
+    if not ref:
+        logging.warning("icon_ch2e: no complete run yet, skip")
+        return
+    stamp = ref.replace(":", "")
+    prefix = f"icon_ch2e/{stamp}/"
+    existing = storage.list_keys(prefix)
+    total = len(_ICON_VARS) * len(_ICON_STEPS_H) * 2
+    if len(existing) >= total:
+        logging.info("icon_ch2e %s already complete (%s files)", ref, len(existing))
+        return
+    todo = [asset for asset in icon_asset_list(ref) if asset["key"] not in existing]
+    logging.info("icon_ch2e syncing %s (%s/%s missing)", ref, len(todo), total)
+    storage.ensure_bucket()
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        list(
+            pool.map(
+                lambda asset: storage.put_bytes(
+                    asset["key"], icon_grib_bytes(asset, ref)
+                ),
+                todo,
+            )
+        )
 
 
 def latest_complete_icon_ref():

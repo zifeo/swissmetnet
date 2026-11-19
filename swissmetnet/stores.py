@@ -61,18 +61,14 @@ def _s3_is_404(err):
 class S3:
     def __init__(self) -> None:
         self.bucket = environ["S3_BUCKET"]
-        self.region = environ["S3_REGION"]
-        self.access_key = environ["S3_ACCESS_KEY"]
-        self.secret_key = environ["S3_SECRET_KEY"]
-        self.session_token = environ.get("S3_SESSION_TOKEN") or None
         self.endpoint = environ.get("S3_ENDPOINT") or None
         self._ensured = False
         self.client = boto3.client(
             "s3",
-            region_name=self.region,
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key,
-            aws_session_token=self.session_token,
+            region_name=environ["S3_REGION"],
+            aws_access_key_id=environ.get("S3_ACCESS_KEY") or None,
+            aws_secret_access_key=environ.get("S3_SECRET_KEY") or None,
+            aws_session_token=environ.get("S3_SESSION_TOKEN") or None,
             config=Config(
                 signature_version=environ.get("S3_ENDPOINT_SIGNATURE", "s3v4"),
                 s3={"addressing_style": "path"} if self.endpoint else {},
@@ -99,6 +95,20 @@ class S3:
                 return False
             raise
         return True
+
+    def list_keys(self, prefix):
+        keys = set()
+        try:
+            pages = self.client.get_paginator("list_objects_v2").paginate(
+                Bucket=self.bucket, Prefix=prefix
+            )
+            for page in pages:
+                for obj in page.get("Contents") or []:
+                    keys.add(obj["Key"])
+        except ClientError as err:
+            if not _s3_is_404(err):
+                raise
+        return keys
 
     def put_bytes(self, key, body, content_type="application/octet-stream"):
         self.ensure_bucket()

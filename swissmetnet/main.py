@@ -3,7 +3,6 @@ import logging
 
 from swissmetnet import data
 from swissmetnet import stores
-from swissmetnet import workflows
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,7 +33,7 @@ def run():
     storage = storages[args.storage]()
     for ds in args.data:
         if ds == "icon_ch2e":
-            workflows.run_icon_ch2e(storage)
+            data.sync_icon_ch2e(storage)
         else:
             storage.insert_once(ds, datasets[ds]())
 

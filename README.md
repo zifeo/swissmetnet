@@ -213,9 +213,9 @@ STAC: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-loca
 
 ### ICON-CH2-EPS - icon_ch2e
 
-Native GRIB files copied to S3. No station extraction, no derived fields. The k8s CronJob is only the clock: it probes STAC for a complete run and starts a Substantial workflow. Substantial history lives in the same bucket under `substantial/`, so a killed Job resumes without re-GET, and a failed run is resumed from its failed step with `run.retry()`. Each copy step HeadObjects first.
+Native GRIB files copied to S3. No station extraction, no derived fields. Lists `icon_ch2e/{ref}/` once on S3 and only fetches missing GRIBs, so an interrupted CronJob resumes without re-downloading.
 
-Needs `--storage s3` and the `S3_*` env. Set `SUBSTANTIAL_URL` only to put the history somewhere else.
+Needs `--storage s3` and the `S3_*` env.
 
 Doc: https://opendatadocs.meteoswiss.ch/e-forecast-data/e2-e3-numerical-weather-forecasting-model
 
